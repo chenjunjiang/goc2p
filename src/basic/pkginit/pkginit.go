@@ -5,14 +5,18 @@ import (
 	"runtime"
 )
 
-func init()  {// 包初始化函数
+/**
+   init()在main函数执行之前执行，并且只会执行一次
+ */
+func init() { // 包初始化函数
 	fmt.Printf("Map: %v\n", m) // 先格式化再打印
 	info = fmt.Sprintf("OS: %s, Arch: %s", runtime.GOOS, runtime.GOARCH)
 }
 
-var m map[int]string = map[int]string{1:"A",2:"B",3:"C"}
+// 当前代码包中的所有全局变量的初始化会在代码包初始化函数执行前完成。这就避免了在代码包初始化函数对某个变量进行赋值之后又被该变量声明中赋予的值覆盖掉的问题
+var m map[int]string = map[int]string{1: "A", 2: "B", 3: "C"}
 var info string
 
-func main() {
-	
+func main() { // 命令源码文件必须有的入口函数
+	fmt.Println(info) // 打印变量info
 }
