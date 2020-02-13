@@ -1,6 +1,7 @@
 package main
 
 import (
+	. "basic/set"
 	"basic/struct/seq"
 	"fmt"
 	"sort"
@@ -139,7 +140,7 @@ func main() {
 	//list.test()
 	//list.test1()
 
-	// 调用seq包中的方法
+	// 调用seq包中的方法，在使用被导入代码包中的程序实体时，需要使用包路径的最后一个元素加"."的方式
 	seq.MyPack()
 
 	str := []string{"4", "7", "5"}
@@ -150,8 +151,22 @@ func main() {
 	seq2 := seq.Sequence{&stringSeq, false, nil}
 	result := seq2.Append("8")
 	fmt.Println(result)
-	result = seq2.Set(2,"9")
+	result = seq2.Set(2, "9")
 	fmt.Println(result)
 	seq2.Sort()
 	fmt.Println(stringSeq.Str)
+
+	fmt.Println("测试Set......")
+	// 在使用被导入代码包中的程序实体时，如果不想加前缀，可以在导入代码包的时候使用"."来代替别名
+	var set1 Set = NewHashSet()
+	var set2 Set = NewHashSet()
+	set1.Add(1)
+	set1.Add(2)
+	set1.Add(3)
+	set2.Add("2")
+	set2.Add("3")
+	set2.Add("4")
+	fmt.Println(set1.Same(set2))
+	fmt.Println(set1.String())
+	fmt.Println(IsSuperset(set1, set2))
 }
