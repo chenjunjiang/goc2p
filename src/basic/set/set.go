@@ -10,3 +10,10 @@ type Set interface {
 	Elements() []interface{}
 	String() string
 }
+
+func IsSet(value interface{}) bool {
+	if _, ok := value.(Set); ok {
+		return true
+	}
+	return false
+}
