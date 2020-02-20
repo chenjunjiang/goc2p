@@ -9,6 +9,7 @@
 *.iml
 *.iws
 out/
+pkg/
 
 # temp ignore
 *.log
