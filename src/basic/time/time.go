@@ -39,19 +39,18 @@ func main() {
 	断续器,周期性的传达到期事件,定时器在被重置之前只会传达一次到期事件，而断续器会持续工作直到被停止
 	*/
 	sign := make(chan byte, 1)
-	var ticker *time.Ticker = time.NewTicker(10 * time.Second)
+	var ticker *time.Ticker = time.NewTicker(1 * time.Second)
 	ticks := ticker.C
 	go func() {
+		i := 1
 		for _ = range ticks {
-			i := 1
-			for {
-				fmt.Println("test......" + strconv.Itoa(i))
-				i++
-				if i > 10 {
-					break
-				}
+			fmt.Println("test......" + strconv.Itoa(i))
+			if i > 10 {
+				ticker.Stop()
+				fmt.Println("stop ticker")
+				break
 			}
-			ticker.Stop()
+			i++
 			/**
 			close函数是一个内建函数， 用来关闭channel，这个channel要么是双向的， 要么是只写的（chan<- Type）。
 			这个方法应该只由发送者调用， 而不是接收者。
@@ -62,10 +61,28 @@ func main() {
 			*/
 			// 关闭只读channel会报编译错误，ticks是只读通道
 			// close(ticks)
-			fmt.Println("stop ticker")
-			break
 		}
 		sign <- 1
 	}()
 	<-sign
+
+	/**
+	在一个定时执行数据修补任务的程序中，为了避免对其它正常的数据库操作产生影响，我们要求两次任务执行之间的最短间隔时间为10分钟，
+	可以这样编写代码满足
+	*/
+	/*var ticker *time.Ticker = time.NewTicker(1 * time.Second)
+	ticks := ticker.C
+	go func() {
+		for _ = range ticks {
+			// path代表数据修补任务
+			if !path() {
+				break
+			}
+	        // 这条语句的执行会增加下一次迭代的执行延时
+			_, ok := <-ticks
+			if !ok {
+				break
+			}
+		}
+	}()*/
 }

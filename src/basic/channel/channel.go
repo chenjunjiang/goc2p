@@ -34,7 +34,7 @@ func (handler PersonHandlerImpl) Batch(origs <-chan Person) <-chan Person {
 	go func() {
 		/**
 		当通道中没有任何元素的时候，当前goroutine会阻塞在range处。在相关的通道被关闭后，若通道中已无元素值或当前goroutine正阻塞于此，则这条for
-		语句的执行会 立即结束。而当此时的通道中还有遗留元素值时，运行时系统会等for语句把他它们全部接收后再结束该语句的执行。
+		语句的执行会 立即结束;而当此时的通道中还有遗留元素值时，运行时系统会等for语句把他它们全部接收后再结束该语句的执行。
 		*/
 		for p := range origs {
 			handler.Handle(&p)
