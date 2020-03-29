@@ -1,19 +1,15 @@
-package datafile2
+package datafile3
 
 import (
 	"errors"
 	"io"
 	"os"
 	"sync"
+	"sync/atomic"
 )
 
 /**
-条件变量
-在Go语言中，sync.Cond代表了条件变量，它总是要与互斥量组合使用。类型*sync.Cond的方法集合中有3个方法：Wait方法、Signal方法和Broadcast方法。
-它们分别代表了等待通知、单发通知和广播通知操作。可以和Java中的wait、notify和notifyAll对比起来看。
-方法Wait会自动地对与该条件变量关联的那个锁进行解锁，并且使调用方所在的Goroutine被阻塞。一旦该方法收到通知，就会试图再次锁定该锁。如果锁定成功，它就
-会唤醒那个被阻塞的Goroutine。否则，该方法会等待下一个通知，那个Goroutine也会继续被阻塞。而方法Signal和Broadcast的作用都是发送通知以唤醒正在为此
-被阻塞的Goroutine。不同的是，前者的目标只有一个，而后者的目标是所有。
+通过用原子操作来代替锁的改造，程序性能会有一定的提升，因为原子操作是底层硬件支持，而锁操作是由操作系统提供的API实现。
 */
 
 // 数据文件的接口类型
@@ -42,10 +38,6 @@ type myDataFile struct {
 	wOffset int64
 	// 读操作需要用到的偏移量
 	rOffset int64
-	// 写操作用到的互斥锁
-	wMutex sync.Mutex
-	// 读操作需要用到的互斥锁
-	rMutex sync.Mutex
 	// 数据块长度
 	dataLen uint32
 }
@@ -72,11 +64,14 @@ func NewDataFile(path string, dataLen uint32) (DataFile, error) {
 func (df *myDataFile) Read() (rsn int64, d Data, err error) {
 	// 读取并更新偏移量
 	var offset int64
-	// 这里使用互斥锁的目的是为了在多个Goroutine执行的情况下获取不重复且正确的读偏移量
-	df.rMutex.Lock()
-	offset = df.rOffset
-	df.rOffset += int64(df.dataLen)
-	df.rMutex.Unlock()
+	for {
+		// 这样读取的原因是：在32位计算机上对64位整数进行操作的时候存在并发安全问题
+		offset = atomic.LoadInt64(&df.rOffset)
+		// 通过CAS更新
+		if atomic.CompareAndSwapInt64(&df.rOffset, offset, offset+int64(df.dataLen)) {
+			break
+		}
+	}
 	// 读取一个数据块
 	rsn = offset / int64(df.dataLen)
 	bytes := make([]byte, df.dataLen)
@@ -101,10 +96,14 @@ func (df *myDataFile) Read() (rsn int64, d Data, err error) {
 func (df *myDataFile) Write(d Data) (wsn int64, err error) {
 	// 读取并更新写偏移量
 	var offset int64
-	df.wMutex.Lock()
-	offset = df.wOffset
-	df.wOffset += int64(df.dataLen)
-	df.wMutex.Unlock()
+	for {
+		// 这样读取的原因是：在32位计算机上对64位整数进行操作的时候存在并发安全问题
+		offset = atomic.LoadInt64(&df.wOffset)
+		// 通过CAS更新
+		if atomic.CompareAndSwapInt64(&df.wOffset, offset, offset+int64(df.dataLen)) {
+			break
+		}
+	}
 
 	// 写入一个数据块
 	wsn = offset / int64(df.dataLen)
@@ -127,15 +126,13 @@ func (df *myDataFile) Write(d Data) (wsn int64, err error) {
 64位的整数，32位机器读或写这个变量时得把人家咔嚓分成两个32位操作，可能一个线程读了某个值的高32位，低32位已经被另一个线程改了。
 */
 func (df *myDataFile) Rsn() int64 {
-	df.rMutex.Lock()
-	defer df.rMutex.Unlock()
-	return df.rOffset / int64(df.dataLen)
+	offset := atomic.LoadInt64(&df.rOffset)
+	return offset / int64(df.dataLen)
 }
 
 func (df *myDataFile) Wsn() int64 {
-	df.wMutex.Lock()
-	defer df.wMutex.Unlock()
-	return df.wOffset / int64(df.dataLen)
+	offset := atomic.LoadInt64(&df.wOffset)
+	return offset / int64(df.dataLen)
 }
 
 func (df *myDataFile) DataLen() uint32 {

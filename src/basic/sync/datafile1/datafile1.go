@@ -116,6 +116,11 @@ func (df *myDataFile) Write(d Data) (wsn int64, err error) {
 	return
 }
 
+/**
+这里读取需要加锁的原因是：在32位计算机上对64位整数进行操作的时候存在并发安全问题。
+原因就是：线程切换带来的原子性问题。
+64位的整数，32位机器读或写这个变量时得把人家咔嚓分成两个32位操作，可能一个线程读了某个值的高32位，低32位已经被另一个线程改了。
+*/
 func (df *myDataFile) Rsn() int64 {
 	df.rMutex.Lock()
 	defer df.rMutex.Unlock()
