@@ -87,7 +87,7 @@ func (df *myDataFile) Read() (rsn int64, d Data, err error) {
 		if err != nil {
 			// 出现EOF的时候继续尝试获取同一个数据块，知道获取成功为止。这是为了避免在读Goroutine多于写Goroutine的情况下出现漏读的问题
 			if err == io.EOF {
-				// 等待知道写操作发送通知唤醒
+				// 等待直到写操作发送通知唤醒
 				df.rCond.Wait()
 				continue
 			}
