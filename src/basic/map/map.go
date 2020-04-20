@@ -31,7 +31,7 @@ func main() {
 	fmt.Println("测试有序Map......")
 	intKeys := NewKeys(func(i1 interface{}, i2 interface{}) int8 {
 		// 把i1转换成int
-		k1 := i1.(int)
+		k1:= i1.(int)
 		k2 := i2.(int)
 		if k1 < k2 {
 			return -1

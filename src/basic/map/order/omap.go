@@ -1,6 +1,7 @@
 package order
 
 import (
+	"basic/map/common"
 	"bytes"
 	"fmt"
 	"reflect"
@@ -8,7 +9,7 @@ import (
 
 // 有序的Map接口类型
 type OrderedMap interface {
-	GenericMap // 泛化的Map接口
+	common.GenericMap // 泛化的Map接口
 	// 获取第一个键值。若无任何键值对则返回nil。
 	FirstKey() interface{}
 	// 获取最后一个键值。若无任何键值对则返回nil。
@@ -24,7 +25,7 @@ type OrderedMap interface {
 
 type myOrderedMap struct {
 	keys     Keys
-	elemType reflect.Type
+	elemType reflect.Type // 值类型,初始化map的时候决定
 	m        map[interface{}]interface{}
 }
 
