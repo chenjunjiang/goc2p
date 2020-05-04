@@ -52,12 +52,33 @@ func record() {
 
 func printNumbers() {
 	for i := 0; i < 5; i++ {
-		// 这里会有一个警告,Possible resource leak, 'defer' is called in a for loop.defer的作用域是一个函数，不是一个语句块
+		// 这里会有一个警告,Possible resource leak, 'defer' is called in a for loop.
 		// https://blog.csdn.net/butterfly5211314/article/details/83512711
 		defer fmt.Printf("%d ", i)
 	}
 	fmt.Println("printNumbers......")
 }
+
+/**
+func deferLoop() {
+	filenames := []string{"1.txt", "2.txt"}
+
+	for _, filename := range filenames {
+		fp, err := os.Open(filename)
+
+		if err != nil {
+			log.Printf("open file %s failed, err:%v", filename, err)
+			continue
+		}
+
+		// Possible resource leak, 'defer' is called in a for loop.
+		// 这句代码会造成循环结束后才开始回收资源，而不是执行了一次循环就回收一次资源
+		defer fp.Close()
+
+		// 使用fp(file pointer)
+	}
+}
+ */
 
 /**
 这个函数被调用之后会输出：5 5 5 5 5
