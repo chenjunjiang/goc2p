@@ -65,7 +65,7 @@ func main() {
 	type 包括 static type和concrete type. 简单来说 static type是你在编码是看见的类型(如int、string)，concrete type是runtime系统看见的类型
 	类型断言能否成功，取决于变量的concrete type，而不是static type. 因此，一个 reader变量如果它的concrete type也实现了write方法的话，它也可以被类型断言为writer
 	反射，就是建立在类型之上的，Golang的指定类型的变量的类型是静态的（也就是指定int、string这些的变量，它的type是static type），
-	在创建变量的时候就已经确定，反射主要与Golang的interface类型相关（它的type是concrete type），只有interface{}类型才有反射一说。
+	在创建变量的时候就已经确定，反射主要与Golang的interface{}类型相关（它的type是concrete type），只有interface{}类型才有反射一说。
 
 	在Golang的实现中，每个interface{}变量都有一个对应pair，pair中记录了实际变量的值和类型:(value, type)
 	value是实际变量值，type是实际变量的类型。一个interface{}类型的变量包含了2个指针，一个指针指向值的类型【对应concrete type】，
@@ -102,13 +102,14 @@ func main() {
 	当执行reflect.ValueOf(interface{})之后，就得到了一个类型为”reflect.Value”变量，可以通过它本身的Interface()方法获得接口变量的真实内容，
 	然后可以通过类型判断进行转换，转换为原有真实类型。不过，我们可能是已知原有类型，也有可能是未知原有类型，因此，下面分两种情况进行说明。
 	*/
-	// 已知类型后转换为其对应的类型的做法如下，直接通过Interface()方法然后强制转换:realValue := value.Interface().(已知的类型)
-	pointer := reflect.ValueOf(&num)
-	value := reflect.ValueOf(num)
+
 	/**
+	已知类型后转换为其对应的类型的做法如下，直接调用Interface()方法后强制转换:realValue := value.Interface().(已知的类型)
 	可以理解为“强制转换”，但是需要注意的时候，转换的时候，如果转换的类型不完全符合，则直接panic;Golang 对类型要求非常严格，类型一定要完全符合
 	转换的时候，要区分是指针还是值。反射可以将“反射类型对象”再重新转换为“接口类型变量”
 	*/
+	pointer := reflect.ValueOf(&num)
+	value := reflect.ValueOf(num)
 	convertPointer := pointer.Interface().(*float64)
 	convertValue := value.Interface().(float64)
 	fmt.Println(convertPointer) // 0xc00009a010
