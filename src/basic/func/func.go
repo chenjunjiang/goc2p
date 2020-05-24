@@ -89,6 +89,11 @@ func main() {
 	myIntSlice := MyIntSlice{1, 2}
 	fmt.Println(myIntSlice.Max()) // 0
 
+	/*encipher := func(plaintext string) []byte {
+		return []byte{1, 2}
+	}
+	GenEncryptionFunc(encipher)*/
+
 	fragment := FragmentImpl{1}
 	fmt.Printf("%p --  %v \n", &fragment, fragment)
 	fragment.Exec()
