@@ -23,4 +23,6 @@ func main() {
 	// 针对无符号数的减法，需要先定义一个变量NN再操作，利用了二进制补码的特性
 	atomic.AddUint64(&uI64, ^uint64(-NN-1)) // 把uI64减3
 	fmt.Println(uI64)                       // 2
+	atomic.AddUint64(&uI64, ^uint64(0))     // 递减1
+	fmt.Println(uI64)                       // 1
 }
