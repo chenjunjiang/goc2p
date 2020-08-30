@@ -8,6 +8,8 @@ import (
 /**
 封装main函数的Goroutine是Go语言运行时系统创建的第一个Goroutine（也被称为主Goroutine）。主Goroutine是在runtime.m0上被运行的。实际上，在
 runtime.m0运行完runtime.g0中的引导程序之后，会接着运行主Goroutine。
+主Goroutine运行完成就意味着整个go程序运行结束，不论是否还有其它Goroutine在运行。这里和Java里面main线程是有区别的，main线程结束Java程序并一定
+会退出。
 */
 func main() {
 	/*name:="Eric"
