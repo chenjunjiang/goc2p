@@ -2,6 +2,12 @@ package main
 
 import "fmt"
 
+/**
+切片的长度是切片中元素的数量，能被访问的元素数量不能超过长度
+切片的容量是从创建切片的索引开始到底层数组末尾的元素数量
+切片是可索引的，并且可以由len()方法获取长度，切片提供了计算容量的方法cap()，可以测量切片最长可以达到多少。
+切片实际的是获取数组的某一部分，len(切片)<=cap(切片)<=len(数组)
+*/
 func main() {
 	// 切片可以看做一种对数组的包装形式，它包装的数组称为该切片的底层数组。反过来讲，切片是针对其底层数组中某个连续片段的描述。
 	var ips = []string{"192.168.0.1", "192.168.0.2", "192.168.0.3"}
@@ -69,4 +75,22 @@ func main() {
 	// 用make初始化的切片值的每一个元素值都会是其元素类型的零值，这里ips中的那100个元素的都会是空字符串""。
 	fmt.Println(ips[0])  // ""
 	fmt.Println(ips[99]) // ""
+
+	// 创建长度为0，容量为10的切片
+	s := make([]int, 0, 10)
+	// 长度为0说明还切片中还不存在元素，访问会报错
+	// fmt.Println(s[0])
+	s = append(s, 1)
+	fmt.Println(s[0])
+
+	x := make([]int, 2, 10)
+	fmt.Println(x[0]) // 0
+	fmt.Println(x[1]) // 0
+	// fmt.Println(x[2]) // index out of range [2] with length 2
+
+	v := []int{2, 3, 4, 5, 6, 7}
+	v = v[:0]
+	fmt.Println(len(v)) // 0
+	fmt.Println(cap(v)) // 6
+	// fmt.Println(v[0]) // index out of range [0] with length 0
 }
