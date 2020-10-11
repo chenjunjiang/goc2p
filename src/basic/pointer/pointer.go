@@ -6,7 +6,7 @@ import (
 )
 
 /**
-指针是一个代表着某个内存地址的值。这个内存地址往往是在内存中存储的另一个变量的值的起始位置。
+一个指针变量指向了一个值的内存地址。这个内存地址往往是在内存中存储的另一个变量的值的起始位置。
 Go语言中有一个专门用于存储内存地址的类型uintptr，和int和uint类型一样，属于数值类型。它的值是一个能够保存一个指针值的32位或64位无符号整数。
 也可以说，它的值是指针类型值的位模式形式。
 1、类型表示法
@@ -35,8 +35,12 @@ type Person struct {
 
 func main() {
 	pp := &Person{"Robert", 32, "chengdu"}
+	fmt.Println(pp)
+	pointer:= unsafe.Pointer(pp)
+	fmt.Println(pointer)
 	// 获取这个结构体值在内存中的存储地址
-	var puptr = uintptr(unsafe.Pointer(pp))
+	var puptr = uintptr(pointer)
+	fmt.Println(puptr)
 	/**
 	由于类型uintptr的值实际上是一个无符号整数，所以我们可以在该类型上进行任何算术运算，Offsetof函数会返回作为参数的某字段在其所属的结构体类型
 	中的存储偏移量。换句话说，该函数的结果值就是在内存中从存储这个结构体值的起始位置到存储其中某字段的值的起始位置之间的距离。这个存储偏移量的单位是
