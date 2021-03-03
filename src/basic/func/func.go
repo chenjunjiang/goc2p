@@ -92,7 +92,17 @@ func main() {
 	/*encipher := func(plaintext string) []byte {
 		return []byte{1, 2}
 	}
-	GenEncryptionFunc(encipher)*/
+	GenEncryptionFunc(encipher)
+	*/
+
+	/*GenEncryptionFunc(func(plaintext string) []byte {
+		return []byte{1, 2}
+	})*/
+
+	// 这种写法只是把匿名函数强转成了Encipher
+	GenEncryptionFunc(Encipher(func(plaintext string) []byte {
+		return []byte{1, 2}
+	}))
 
 	fragment := FragmentImpl{1}
 	fmt.Printf("%p --  %v \n", &fragment, fragment)
